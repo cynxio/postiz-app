@@ -1,0 +1,218 @@
+---
+name: cynxio-postiz
+networks:
+  postiz-network:
+    external: false
+  temporal-network:
+    driver: bridge
+services:
+  postiz:
+    depends_on:
+      postiz-postgres:
+        condition: service_healthy
+        required: true
+      postiz-redis:
+        condition: service_healthy
+        required: true
+      temporal:
+        condition: service_healthy
+        required: true
+    environment:
+      MAIN_URL: http://localhost:4007
+      FRONTEND_URL: http://localhost:4007
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:4007/api
+      JWT_SECRET: "${POSTIZ_JWT_SECRET:?Run setup.py first}"
+      DATABASE_URL: postgresql://postiz-user:${POSTIZ_DB_PASSWORD:?Run setup.py first}@postiz-postgres:5432/postiz-db-local
+      REDIS_URL: redis://postiz-redis:6379
+      BACKEND_INTERNAL_URL: http://localhost:3000
+      TEMPORAL_ADDRESS: temporal:7233
+      IS_GENERAL: 'true'
+      DISABLE_REGISTRATION: "${DISABLE_REGISTRATION:-true}"
+      RUN_CRON: 'true'
+      NOT_SECURED: 'true'
+      STORAGE_PROVIDER: local
+      UPLOAD_DIRECTORY: "/uploads"
+      NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
+      NX_ADD_PLUGINS: 'false'
+      API_LIMIT: '30'
+    healthcheck:
+      interval: 30s
+      retries: 5
+      start_period: 120s
+      test:
+      - CMD
+      - node
+      - "-e"
+      - const r=require('http').get('http://localhost:5000/',res=>process.exit(res.statusCode<500?0:1));r.on('error',()=>process.exit(1));r.setTimeout(4000,()=>{r.destroy();process.exit(1)})
+      timeout: 10s
+    image: ghcr.io/gitroomhq/postiz-app:v2.24.0@sha256:01b24a4fc1055f6833122c99614805bea702fdc0ee30c9b5d09330b521fa1efa
+    networks:
+      postiz-network: 
+      temporal-network: 
+    restart: unless-stopped
+    volumes:
+    - source: postiz-config
+      target: "/config"
+      type: volume
+      volume: {}
+    - source: postiz-uploads
+      target: "/uploads"
+      type: volume
+      volume: {}
+    ports:
+    - target: 5000
+      published: '4007'
+      host_ip: 127.0.0.1
+      protocol: tcp
+    env_file:
+    - ".env"
+  postiz-postgres:
+    environment:
+      POSTGRES_DB: postiz-db-local
+      POSTGRES_PASSWORD: "${POSTIZ_DB_PASSWORD:?Run setup.py first}"
+      POSTGRES_USER: postiz-user
+    healthcheck:
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      test:
+      - CMD-SHELL
+      - pg_isready -U postiz-user -d postiz-db-local
+      timeout: 5s
+    image: postgres:17-alpine
+    networks:
+      postiz-network: 
+    restart: unless-stopped
+    volumes:
+    - source: postgres-volume
+      target: "/var/lib/postgresql/data"
+      type: volume
+      volume: {}
+  postiz-redis:
+    healthcheck:
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      test:
+      - CMD-SHELL
+      - redis-cli ping | grep -q PONG
+      timeout: 5s
+    image: redis:7.2
+    networks:
+      postiz-network: 
+    restart: unless-stopped
+    volumes:
+    - source: postiz-redis-data
+      target: "/data"
+      type: volume
+      volume: {}
+  temporal:
+    depends_on:
+      temporal-elasticsearch:
+        condition: service_healthy
+        required: true
+      temporal-postgresql:
+        condition: service_healthy
+        required: true
+    environment:
+      DB: postgres12
+      DB_PORT: '5432'
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: "${TEMPORAL_DB_PASSWORD:?Run setup.py first}"
+      POSTGRES_SEEDS: temporal-postgresql
+      DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/development-sql.yaml
+      ENABLE_ES: 'true'
+      ES_SEEDS: temporal-elasticsearch
+      ES_VERSION: v7
+      TEMPORAL_NAMESPACE: default
+    healthcheck:
+      interval: 10s
+      retries: 10
+      start_period: 30s
+      test:
+      - CMD
+      - temporal
+      - operator
+      - cluster
+      - health
+      - "--address"
+      - temporal:7233
+      timeout: 5s
+    image: temporalio/auto-setup:1.28.1
+    labels:
+      kompose.volume.type: configMap
+    networks:
+      temporal-network: 
+    restart: unless-stopped
+    volumes:
+    - bind:
+        create_host_path: true
+      source: "../../dynamicconfig"
+      target: "/etc/temporal/config/dynamicconfig"
+      type: bind
+      read_only: true
+  temporal-elasticsearch:
+    environment:
+      cluster.routing.allocation.disk.threshold_enabled: 'true'
+      cluster.routing.allocation.disk.watermark.low: 512mb
+      cluster.routing.allocation.disk.watermark.high: 256mb
+      cluster.routing.allocation.disk.watermark.flood_stage: 128mb
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms256m -Xmx256m"
+      xpack.security.enabled: 'false'
+    expose:
+    - 9200
+    healthcheck:
+      interval: 10s
+      retries: 10
+      start_period: 60s
+      test:
+      - CMD-SHELL
+      - curl -fsS "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"
+        || exit 1
+      timeout: 10s
+    image: elasticsearch:7.17.27
+    networks:
+      temporal-network: 
+    restart: unless-stopped
+    volumes:
+    - source: temporal-elasticsearch-data
+      target: "/usr/share/elasticsearch/data"
+      type: volume
+      volume: {}
+  temporal-postgresql:
+    environment:
+      POSTGRES_PASSWORD: "${TEMPORAL_DB_PASSWORD:?Run setup.py first}"
+      POSTGRES_USER: temporal
+    expose:
+    - 5432
+    healthcheck:
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      test:
+      - CMD-SHELL
+      - pg_isready -U temporal
+      timeout: 5s
+    image: postgres:16
+    networks:
+      temporal-network: 
+    restart: unless-stopped
+    volumes:
+    - source: temporal-postgres-data
+      target: "/var/lib/postgresql/data"
+      type: volume
+      volume: {}
+volumes:
+  postgres-volume:
+    external: false
+  postiz-config:
+    external: false
+  postiz-redis-data:
+    external: false
+  postiz-uploads:
+    external: false
+  temporal-elasticsearch-data:
+    external: false
+  temporal-postgres-data:
+    external: false
