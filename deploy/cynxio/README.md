@@ -59,6 +59,10 @@ Postiz service. Provider app setup and applicable reviews are still required.
 - YouTube: `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`.
 - TikTok: `TIKTOK_CLIENT_ID`, `TIKTOK_CLIENT_SECRET`.
 - X: `X_API_KEY`, `X_API_SECRET`.
+- Reddit: `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`.
+- Kick: `KICK_CLIENT_ID`, `KICK_SECRET`.
+- Twitch: `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`.
+- DEV.to and Hashnode: enter the account API token through Add Channel.
 
 Some providers need publicly reachable HTTPS callbacks and media URLs. This
 localhost setup does not satisfy those requirements. Public deployment is a
@@ -117,8 +121,30 @@ a replacement image from this fork.
   This upstream local-login flow uses an external redirect service. A future
   public HTTPS deployment should use its own direct callback instead.
 
-Provider secrets are stored only in the ignored, mode-0600 `deploy/cynxio/.env`,
-which the Postiz service already loads via `env_file`. The service was recreated
-and returned healthy. All three connected channels are enabled and are not flagged
-for reauthorization in Postiz. No test posts or videos have been published.
+- DEV.to: connected as Cynxio (`cynxio`) using the `Cynxio Postiz Local` API key.
+  Profile: https://dev.to/cynxio.
+- Hashnode: connected as Cynxio (`cynxio`) with a personal access token.
+  Profile: https://hashnode.com/@cynxio. Created publication
+  https://thecynxio.hashnode.dev (`6abd5c257a9ea1114ae77f72`);
+  `cynxio.hashnode.dev` was unavailable.
+- Medium: profile https://medium.com/@cynxio verified. Not connected:
+  Medium no longer issues new integration tokens. An existing legacy token
+  would be required: https://help.medium.com/hc/en-us/articles/213480228-API-Importing.
+- Threads: added the Threads use case to Cynxio Social, app ID
+  `1446204587390155`. Setup pending Meta password reauthentication to reveal
+  the secret, callback registration, tester enrollment and OAuth connection.
+- Reddit: prepared a separate web app registration for `Cynxio Postiz Local`,
+  callback `http://localhost:4007/integrations/social/reddit`. CAPTCHA and app
+  registration remain pending; the unrelated research-app draft is preserved.
+- Kick: developer app creation requires enabling two-factor authentication.
+- Twitch: developer-console sign-in is pending.
+- TikTok: developer-account sign-in is pending. Public HTTPS callbacks and
+  verified media URLs are also required; the localhost installation is not
+  ready for public TikTok publishing.
+
+App secrets and token backups are stored in the ignored, mode-0600
+`deploy/cynxio/.env`, which the Postiz service loads via `env_file`. Connected
+channel tokens are also held in Postiz's private database. All five connected
+channels are enabled and are not flagged for reauthorization in Postiz.
+No test posts or videos have been published.
 Public media delivery and end-to-end scheduled publishing remain unverified.
