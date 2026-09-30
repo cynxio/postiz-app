@@ -49,7 +49,7 @@ reachability, not social publishing.
 
 ## Social connections and public hosting
 
-No social accounts or external publishing credentials are configured initially.
+A fresh installation has no social accounts or external publishing credentials.
 Add the appropriate provider variables to the ignored `.env`, then recreate the
 Postiz service. Provider app setup and applicable reviews are still required.
 
@@ -94,3 +94,23 @@ No social accounts are connected. OAuth callbacks, media uploads, scheduled
 publishing and public hosting have not been verified. This installation runs
 the pinned upstream image; source customizations require building and selecting
 a replacement image from this fork.
+
+## Provider setup status (1 October 2026)
+
+- YouTube: connected as Cynxio (`@thecynxio`). Dedicated OAuth client
+  `Cynxio Postiz Local` in the existing `cynxio-509303` Google project; the
+  existing website client is unchanged. YouTube Data, Analytics and Reporting
+  APIs are enabled. Callback: `http://localhost:4007/integrations/social/youtube`.
+- X: connected as Cynxio (`thecynxio`). Developer app `33486181`, OAuth 1.0a
+  read/write permissions, callback `http://localhost:4007/integrations/social/x`.
+  The developer console reports Pay Per Use with a zero credit balance.
+  Connection success does not establish publishing or analytics entitlement.
+- Instagram: developer registration completed; creation of `Cynxio Social`
+  with the Instagram use case is waiting for the owner's Facebook password
+  reauthentication. No Instagram credentials or channel connection yet.
+
+Provider secrets are stored only in the ignored, mode-0600 `deploy/cynxio/.env`,
+which the Postiz service already loads via `env_file`. The service was recreated
+and returned healthy. Both connected channels are enabled and are not flagged
+for reauthorization in Postiz. No test posts or videos have been published.
+Public media delivery and end-to-end scheduled publishing remain unverified.
