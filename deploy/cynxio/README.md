@@ -79,11 +79,18 @@ UI are omitted; the scheduler and its persistent storage remain included.
 ## Verification status (30 September 2026)
 
 Passed: Compose validation, single loopback port, project-scoped networks and
-volumes, private ignored secrets, and non-destructive setup rerun.
+volumes, private ignored secrets, and non-destructive setup rerun. Image pulls
+and startup completed; all six services are healthy. Backend, frontend and
+orchestrator are online, Temporal reports SERVING, and the main task queue has
+an active worker poller.
 
-Blocked: image download, startup, runtime health and browser verification.
-Docker repeatedly failed to resolve `registry-1.docker.io` through OrbStack DNS
-(`0.250.250.200`); a direct GHCR pull also timed out. No Postiz containers have
-been started and no social accounts have been connected. After registry access
-recovers, run the Start commands above and verify the registration/login UI,
-authenticated calendar, storage and Temporal worker before claiming it operational.
+A synthetic local account verified first-account registration, authenticated
+identity, anonymous API rejection, wrong-password rejection, registration
+closing after the first account, browser login and the rendered calendar with
+no browser page errors. The synthetic user and organization were removed;
+first-account registration is available again at http://localhost:4007.
+
+No social accounts are connected. OAuth callbacks, media uploads, scheduled
+publishing and public hosting have not been verified. This installation runs
+the pinned upstream image; source customizations require building and selecting
+a replacement image from this fork.
