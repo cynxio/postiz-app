@@ -127,20 +127,28 @@ a replacement image from this fork.
   Profile: https://hashnode.com/@cynxio. Created publication
   https://thecynxio.hashnode.dev (`6abd5c257a9ea1114ae77f72`);
   `cynxio.hashnode.dev` was unavailable.
-- Medium: profile https://medium.com/@cynxio verified. Not connected:
+- Medium: skipped at the owner's request. Profile https://medium.com/@cynxio verified. Not connected:
   Medium no longer issues new integration tokens. An existing legacy token
   would be required: https://help.medium.com/hc/en-us/articles/213480228-API-Importing.
 - Threads: added the Threads use case to Cynxio Social, app ID
   `1446204587390155`. Setup pending Meta password reauthentication to reveal
   the secret, callback registration, tester enrollment and OAuth connection.
 - Reddit: prepared a separate web app registration for `Cynxio Postiz Local`,
-  callback `http://localhost:4007/integrations/social/reddit`. CAPTCHA and app
-  registration remain pending; the unrelated research-app draft is preserved.
+  callback `http://localhost:4007/integrations/social/reddit`. Registration
+  returned a Responsible Builder Policy notice. Reddit requires explicit API
+  approval before access; commercial use requires written approval.
+  Policy: https://support.reddithelp.com/hc/en-us/articles/42728983564564-Responsible-Builder-Policy.
+  The unrelated research-app draft is preserved. No access request has been sent.
 - Kick: developer app creation requires enabling two-factor authentication.
 - Twitch: developer-console sign-in is pending.
 - TikTok: developer-account sign-in is pending. Public HTTPS callbacks and
   verified media URLs are also required; the localhost installation is not
   ready for public TikTok publishing.
+
+The owner subsequently reported completing Meta reauthentication, Kick 2FA,
+and Twitch/TikTok developer sign-ins. Browser page control timed out before
+these could be verified or app setup continued. Recheck the existing signed-in
+tabs; do not ask the owner to repeat those steps without observing a new gate.
 
 App secrets and token backups are stored in the ignored, mode-0600
 `deploy/cynxio/.env`, which the Postiz service loads via `env_file`. Connected
