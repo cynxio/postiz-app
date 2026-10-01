@@ -1,0 +1,42 @@
+# Run together with compose.yaml. The external bridge is private to this VPS.
+services:
+  postiz:
+    environment:
+      MAIN_URL: https://social.internal.cynxio.com
+      FRONTEND_URL: https://social.internal.cynxio.com
+      NEXT_PUBLIC_BACKEND_URL: https://social.internal.cynxio.com/api
+      NOT_SECURED: ""
+      DISABLE_REGISTRATION: 'true'
+    ports: !override
+      - target: 5000
+        published: '4007'
+        host_ip: 172.30.40.1
+        protocol: tcp
+    networks:
+      ingress:
+    mem_limit: 3g
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  postiz-postgres:
+    mem_limit: 768m
+  postiz-redis:
+    mem_limit: 256m
+  temporal:
+    mem_limit: 1g
+  temporal-elasticsearch:
+    mem_limit: 1g
+    environment:
+      path.repo: /snapshots
+    volumes:
+      - es-snapshots:/snapshots
+  temporal-postgresql:
+    mem_limit: 512m
+networks:
+  ingress:
+    external: true
+    name: cynxio-postiz-ingress
+volumes:
+  es-snapshots:

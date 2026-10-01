@@ -1,0 +1,8 @@
+[Unit]
+Description=Encrypted Cynxio Postiz backup
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/cynxio/postiz/deploy/cynxio/backup.vps.sh
+UMask=0077

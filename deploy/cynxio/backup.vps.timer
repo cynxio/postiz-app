@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Cynxio Postiz backup
+
+[Timer]
+OnCalendar=*-*-* 02:45:00 UTC
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target

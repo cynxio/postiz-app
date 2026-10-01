@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cynxio-social
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+  namespace: cynxio-social
+spec:
+  acme:
+    email: derwin.oesmanto@cynxio.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-account
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: postiz
+  namespace: cynxio-social
+spec:
+  secretName: postiz-tls
+  dnsNames:
+    - social.internal.cynxio.com
+  issuerRef:
+    name: letsencrypt
+    kind: Issuer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postiz
+  namespace: cynxio-social
+spec:
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 4007
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: postiz
+  namespace: cynxio-social
+  labels:
+    kubernetes.io/service-name: postiz
+    endpointslice.kubernetes.io/managed-by: cynxio
+addressType: IPv4
+ports:
+  - name: http
+    protocol: TCP
+    port: 4007
+endpoints:
+  - addresses: [172.30.40.1]
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+  namespace: cynxio-social
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: postiz-http
+  namespace: cynxio-social
+spec:
+  entryPoints: [web]
+  routes:
+    - kind: Rule
+      match: Host(`social.internal.cynxio.com`)
+      priority: 10
+      middlewares:
+        - name: https-redirect
+      services:
+        - name: postiz
+          port: 5000
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: postiz-https
+  namespace: cynxio-social
+spec:
+  entryPoints: [websecure]
+  routes:
+    - kind: Rule
+      match: Host(`social.internal.cynxio.com`)
+      services:
+        - name: postiz
+          port: 5000
+  tls:
+    secretName: postiz-tls
