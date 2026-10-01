@@ -182,14 +182,27 @@ a replacement image from this fork.
   TikTok's Direct Post guidelines exclude internal/private team upload tools
   from the intended use for audited public posting:
   https://developers.tiktok.com/doc/content-sharing-guidelines.
+  Normal TikTok publishing uses Buffer Cloud Free instead:
+  https://publish.buffer.com/channels/6abdfc76ea19ca0bde3fb62c/schedule.
+  Connected `@thecynxio` on 1 October 2026; Free plan, Automatic publishing
+  mode and Jakarta timezone verified. No posts or drafts created. The existing
+  Postiz sandbox connection is retained for testing.
+
+- Mastodon: connected as `cynxio` on `mastodon.social` on 1 October 2026.
+  Profile: https://mastodon.social/@cynxio. App `Cynxio Postiz` (`9245067`)
+  uses `profile`, `write:media` and `write:statuses`, with callback
+  `https://social.internal.cynxio.com/integrations/social/mastodon`.
+  Credentials are installed privately on the VPS; Postiz was recreated and
+  became healthy. OAuth completed and the channel appears in the calendar.
 
 Existing browser-tab attachment stalled; fresh tabs in the same Cynxio Brave
 profile restored control and preserved the signed-in sessions.
 
 App secrets and token backups are stored in the ignored, mode-0600
 `deploy/cynxio/.env`, which the Postiz service loads via `env_file`. Connected
-channel tokens are also held in Postiz's private database. All eight connected
-channels are enabled and are not flagged for reauthorization in Postiz.
+channel tokens are also held in Postiz's private database. The eight earlier
+channels were verified enabled without reauthorization flags; Mastodon is now
+the ninth connected channel, verified in the hosted calendar.
 No test posts or videos have been published.
 Public HTTPS media delivery passed after migration. End-to-end scheduled
 publishing remains unverified.
