@@ -130,20 +130,23 @@ a replacement image from this fork.
 - Medium: skipped at the owner's request. Profile https://medium.com/@cynxio verified. Not connected:
   Medium no longer issues new integration tokens. An existing legacy token
   would be required: https://help.medium.com/hc/en-us/articles/213480228-API-Importing.
-- Threads: added the Threads use case to Cynxio Social, app ID
+- Threads: connected as `thecynxio` through Cynxio Social, app ID
   `1446204587390155`. Registered callback
   `https://redirectmeto.com/http://localhost:4007/integrations/social/threads`
-  and accepted the `thecynxio` Threads Tester invitation. Meta requested
-  password reauthentication again when revealing the secret in a fresh tab;
-  secret configuration and OAuth connection remain pending.
+  and accepted the `thecynxio` Threads Tester invitation. The owner supplied
+  the secret, which was saved only to the private ignored environment file.
+  OAuth completed and the channel is enabled without a reauthorization flag.
 - Reddit: prepared a separate web app registration for `Cynxio Postiz Local`,
   callback `http://localhost:4007/integrations/social/reddit`. Registration
   returned a Responsible Builder Policy notice. Reddit requires explicit API
   approval before access; commercial use requires written approval.
   Policy: https://support.reddithelp.com/hc/en-us/articles/42728983564564-Responsible-Builder-Policy.
   The unrelated research-app draft is preserved. A separate commercial API
-  access request is prepared in Reddit Help for internal, human-reviewed
-  Postiz scheduling; submission awaits the owner's explicit instruction.
+  access request was prepared in Reddit Help for internal, human-reviewed
+  Postiz scheduling. The owner approved submission and it was attempted;
+  the site returned the populated form without confirmation or a ticket number.
+  No acknowledgement was found in the work inbox. Delivery is unconfirmed;
+  do not treat this as an approved or successfully submitted API application.
 - Kick: connected as `cynxio`. Created app `cynxio` after the owner enabled 2FA.
   Callback `http://localhost:4007/integrations/social/kick`; requested scopes
   `user:read`, `channel:read`, and `chat:write`. This provider publishes chat
@@ -152,21 +155,30 @@ a replacement image from this fork.
   Chat Bot, confidential client, callback
   `http://localhost:4007/integrations/social/twitch`. Creation returned
   `user must have two factor auth enabled to perform this action`.
-  The owner must enable Twitch 2FA before app registration can finish.
+  Opened Twitch 2FA enrollment. The owner's phone attempt returned
+  `We weren't able to register two-factor authentication for your phone number.`
+  Twitch 2FA remains disabled; app creation cannot finish yet.
 - TikTok: created app `Cynxio` (`7691453308287862804`) and sandbox `Cynxio Local`
   (`7691524823546939412`). Prepared Login Kit, Content Posting API, Direct Post,
   and Postiz's six scopes. These edits are **not saved**: Apply changes requires
   an app icon, Terms of Service URL, Privacy Policy URL, website URL, and redirect
-  URI. The draft is left open. Public HTTPS callbacks and verified media URLs
-  remain necessary; no TikTok credentials are installed in Postiz, and no app
-  review or public posting has been attempted.
+  URI. Website policy updates, the icon, and signature file are now deployed
+  on cynxio.com; TikTok verified `https://cynxio.com/` for this sandbox. Entered
+  `https://cynxio.com/terms/` and `https://cynxio.com/privacy/` in the app draft.
+  Browser file upload failed before the icon could be attached. The draft is
+  left open. A public Postiz callback and media service remain necessary;
+  the static website does not supply those. No TikTok credentials are installed
+  in Postiz, and no app review or public posting has been attempted.
+  TikTok's Direct Post guidelines exclude internal/private team upload tools
+  from the intended use for audited public posting:
+  https://developers.tiktok.com/doc/content-sharing-guidelines.
 
 Existing browser-tab attachment stalled; fresh tabs in the same Cynxio Brave
 profile restored control and preserved the signed-in sessions.
 
 App secrets and token backups are stored in the ignored, mode-0600
 `deploy/cynxio/.env`, which the Postiz service loads via `env_file`. Connected
-channel tokens are also held in Postiz's private database. All six connected
+channel tokens are also held in Postiz's private database. All seven connected
 channels are enabled and are not flagged for reauthorization in Postiz.
 No test posts or videos have been published.
 Public media delivery and end-to-end scheduled publishing remain unverified.
