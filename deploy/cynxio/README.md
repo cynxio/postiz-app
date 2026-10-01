@@ -131,28 +131,42 @@ a replacement image from this fork.
   Medium no longer issues new integration tokens. An existing legacy token
   would be required: https://help.medium.com/hc/en-us/articles/213480228-API-Importing.
 - Threads: added the Threads use case to Cynxio Social, app ID
-  `1446204587390155`. Setup pending Meta password reauthentication to reveal
-  the secret, callback registration, tester enrollment and OAuth connection.
+  `1446204587390155`. Registered callback
+  `https://redirectmeto.com/http://localhost:4007/integrations/social/threads`
+  and accepted the `thecynxio` Threads Tester invitation. Meta requested
+  password reauthentication again when revealing the secret in a fresh tab;
+  secret configuration and OAuth connection remain pending.
 - Reddit: prepared a separate web app registration for `Cynxio Postiz Local`,
   callback `http://localhost:4007/integrations/social/reddit`. Registration
   returned a Responsible Builder Policy notice. Reddit requires explicit API
   approval before access; commercial use requires written approval.
   Policy: https://support.reddithelp.com/hc/en-us/articles/42728983564564-Responsible-Builder-Policy.
-  The unrelated research-app draft is preserved. No access request has been sent.
-- Kick: developer app creation requires enabling two-factor authentication.
-- Twitch: developer-console sign-in is pending.
-- TikTok: developer-account sign-in is pending. Public HTTPS callbacks and
-  verified media URLs are also required; the localhost installation is not
-  ready for public TikTok publishing.
+  The unrelated research-app draft is preserved. A separate commercial API
+  access request is prepared in Reddit Help for internal, human-reviewed
+  Postiz scheduling; submission awaits the owner's explicit instruction.
+- Kick: connected as `cynxio`. Created app `cynxio` after the owner enabled 2FA.
+  Callback `http://localhost:4007/integrations/social/kick`; requested scopes
+  `user:read`, `channel:read`, and `chat:write`. This provider publishes chat
+  messages, not videos.
+- Twitch: signed in as `thecynxio`. Prepared `Cynxio Postiz Local`, category
+  Chat Bot, confidential client, callback
+  `http://localhost:4007/integrations/social/twitch`. Creation returned
+  `user must have two factor auth enabled to perform this action`.
+  The owner must enable Twitch 2FA before app registration can finish.
+- TikTok: created app `Cynxio` (`7691453308287862804`) and sandbox `Cynxio Local`
+  (`7691524823546939412`). Prepared Login Kit, Content Posting API, Direct Post,
+  and Postiz's six scopes. These edits are **not saved**: Apply changes requires
+  an app icon, Terms of Service URL, Privacy Policy URL, website URL, and redirect
+  URI. The draft is left open. Public HTTPS callbacks and verified media URLs
+  remain necessary; no TikTok credentials are installed in Postiz, and no app
+  review or public posting has been attempted.
 
-The owner subsequently reported completing Meta reauthentication, Kick 2FA,
-and Twitch/TikTok developer sign-ins. Browser page control timed out before
-these could be verified or app setup continued. Recheck the existing signed-in
-tabs; do not ask the owner to repeat those steps without observing a new gate.
+Existing browser-tab attachment stalled; fresh tabs in the same Cynxio Brave
+profile restored control and preserved the signed-in sessions.
 
 App secrets and token backups are stored in the ignored, mode-0600
 `deploy/cynxio/.env`, which the Postiz service loads via `env_file`. Connected
-channel tokens are also held in Postiz's private database. All five connected
+channel tokens are also held in Postiz's private database. All six connected
 channels are enabled and are not flagged for reauthorization in Postiz.
 No test posts or videos have been published.
 Public media delivery and end-to-end scheduled publishing remain unverified.
