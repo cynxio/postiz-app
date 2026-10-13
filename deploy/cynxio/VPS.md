@@ -16,8 +16,11 @@ registration is closed. Use the existing email/password login.
   docker compose -f compose.yaml -f compose.vps.yaml up -d --wait
   ```
 
-- Same pinned upstream v2.24.0 multi-architecture image as the local install.
-  This deployment does not build the fork's newer main branch.
+- The pinned upstream v2.24.0 image with one change, built on the VPS by `docker compose ... build postiz` from
+  `Dockerfile.upload-limit` (13 October 2026): a video may be 10 GB (upstream's code says 1 GB and its nginx 2 GB).
+  The browser's upload page keeps its own 1 GB check; larger files go in through the public API. The overlay
+  before that change is `compose.vps.yaml.before-upload10g` beside it. Traefik gives a request one hour, so a
+  file must arrive within that. This deployment does not build the fork's newer main branch.
 - Private `.env` is mode 0600, retaining all original keys and encryption secrets.
   Never print resolved Compose configuration or commit secrets.
 - Registration is disabled, HTTPS cookies enabled. Only the VPS scheduler runs.

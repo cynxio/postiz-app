@@ -1,0 +1,12 @@
+# The pinned upstream image with one change: a video in the media library may be 10 GB, not 1 GB.
+# Upstream sets the limit in code (libraries/nestjs-libraries/src/upload/custom.upload.validation.ts, getMaxSize)
+# and its nginx takes 2 GB. Images stay at 10 MB. The upload page in the browser keeps its own 1 GB check:
+# larger files go in through the public API (videos/kit/scripts/publish.ts).
+FROM ghcr.io/gitroomhq/postiz-app:v2.24.0@sha256:01b24a4fc1055f6833122c99614805bea702fdc0ee30c9b5d09330b521fa1efa
+RUN set -e; \
+    sed -i 's/client_max_body_size 2G;/client_max_body_size 10G;/' /etc/nginx/nginx.conf; \
+    grep -q 'client_max_body_size 10G;' /etc/nginx/nginx.conf; \
+    n=0; for f in /app/apps/*/dist/libraries/nestjs-libraries/src/upload/custom.upload.validation.js; do \
+      sed -i 's/return 1024 \* 1024 \* 1024;/return 10 * 1024 * 1024 * 1024;/' "$f"; \
+      grep -q 'return 10 \* 1024 \* 1024 \* 1024;' "$f"; n=$((n+1)); \
+    done; test "$n" -ge 2

@@ -1,6 +1,11 @@
 # Run together with compose.yaml. The external bridge is private to this VPS.
 services:
   postiz:
+    # the upstream image with the video size limit raised to 10 GB (Dockerfile.upload-limit)
+    image: cynxio/postiz-app:v2.24.0-upload10g
+    build:
+      context: .
+      dockerfile: Dockerfile.upload-limit
     environment:
       MAIN_URL: https://social.internal.cynxio.com
       FRONTEND_URL: https://social.internal.cynxio.com
